@@ -67,6 +67,7 @@ print(dados_brasil.describe())
 
 fig, axs = plt.subplots(2,2, figsize=(10,6))
 fig.subplots_adjust(hspace=0.5, wspace=0.3)
+fig.suptitle('Imigração dos 4 maiores paises da america do sul para o Canada')
 
 axs[0, 0].plot(df.loc['Brasil', anos])
 axs[0, 0].set_title('Brasil')
@@ -85,5 +86,11 @@ for ax in axs.flat:
     ax.set_xlabel('Ano')
     ax.set_ylabel('Número de Imigrantes')
     ax.grid()
+
+ymin = 0
+ymax = 7000
+
+for ax in axs.ravel():
+    ax.set_ylim(ymin, ymax)
 
 plt.show()
