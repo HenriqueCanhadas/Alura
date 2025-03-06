@@ -43,6 +43,8 @@ plt.show()
 
 america_sul = df.query('Região=="América do Sul"')
 
+america_sul.head()
+
 america_sul_sorted = america_sul.sort_values("Total", ascending=True)
 
 #cores = ['royalblue', 'orange','forestgreen', 'orchid', 'purple', 'brown', 'slateblue', 'gray', 'olive', 'navy', 'teal', 'tomato']
