@@ -58,7 +58,21 @@ valores_max = gas_por_setor.groupby(level=0).max().values
 
 tabela_sumarizada = gas_por_setor.groupby(level = 0).idxmax()
 tabela_sumarizada.insert(1, 'Quantidade de emissão',valores_max)
-print(tabela_sumarizada)
 
-print(gas_por_setor.swaplevel(0, 1).groupby(level = 0).idxmax())
+gas_por_setor.swaplevel(0, 1).groupby(level = 0).idxmax()
 
+emissoes_por_ano.groupby('Ano')[["Emissão"]].mean().plot(figsize=(10,6));
+
+emissoes_por_ano.groupby('Ano')[["Emissão"]].mean().idxmax()
+
+emissoes_por_ano.groupby(['Ano', 'Gás'])[['Emissão']].mean()
+
+media_emissão_anual = emissoes_por_ano.groupby(['Ano', 'Gás'])[['Emissão']].mean().reset_index()
+
+media_emissão_anual = media_emissão_anual.pivot_table(index='Ano', columns='Gás', values='Emissão')
+
+print(media_emissão_anual)
+
+media_emissão_anual.plot(subplots=True, figsize=(10,40))
+
+plt.show()
