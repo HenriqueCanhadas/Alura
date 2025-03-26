@@ -71,8 +71,17 @@ media_emissão_anual = emissoes_por_ano.groupby(['Ano', 'Gás'])[['Emissão']].m
 
 media_emissão_anual = media_emissão_anual.pivot_table(index='Ano', columns='Gás', values='Emissão')
 
-print(media_emissão_anual)
-
 media_emissão_anual.plot(subplots=True, figsize=(10,40))
 
-plt.show()
+dados_ibge = r'POP2022_Municipios.xls'
+
+populacao_estados = pd.read_excel(dados_ibge, header=1, skipfooter=34)
+
+
+
+populacao_estados = populacao_estados.groupby('UF').sum(numeric_only = True)
+
+#populacao_estados = populacao_estados['POPULAÇÃO'].astype(int)
+
+print(populacao_estados[populacao_estados['POPULAÇÃO'].str.contains('\(', na = False)])
+
