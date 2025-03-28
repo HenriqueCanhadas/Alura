@@ -77,11 +77,31 @@ dados_ibge = r'POP2022_Municipios.xls'
 
 populacao_estados = pd.read_excel(dados_ibge, header=1, skipfooter=34)
 
+populacao_estados.groupby('UF').sum(numeric_only = True)
 
+populacao_estados = populacao_estados[populacao_estados['POPULAÇÃO'].str.contains('\(', na = False)]
 
-populacao_estados = populacao_estados.groupby('UF').sum(numeric_only = True)
+populacao_estados = populacao_estados.assign(populacao_sem_parenteses = populacao_estados['POPULAÇÃO'].replace('\(\d{1,2}\)', '', regex = True),
+                                             populacao = lambda x : x.loc[:, 'populacao_sem_parenteses'].replace('\.', '', regex = True))
 
-#populacao_estados = populacao_estados['POPULAÇÃO'].astype(int)
+populacao_estados[populacao_estados['POPULAÇÃO'].str.contains('\(', na = False)]
 
-print(populacao_estados[populacao_estados['POPULAÇÃO'].str.contains('\(', na = False)])
+populacao_estados = populacao_estados.astype({'populacao':'int64'})
 
+populacao_estados = populacao_estados.groupby('UF')[['populacao']].sum().reset_index()
+
+emissao_estados = emissoes_por_ano[emissoes_por_ano['Ano'] == 2021].groupby('Estado')[['Emissão']].sum().reset_index()
+
+dados_agrupados = pd.merge(emissao_estados, populacao_estados, left_on='Estado', right_on="UF")
+print(dados_agrupados)
+
+dados_agrupados.plot(x='populacao',y='Emissão', kind='scatter',figsize=(8,6));
+
+import plotly.express as px
+
+fig = px.scatter(data_frame=dados_agrupados,x='populacao',y='Emissão', text='Estado', opacity=0)
+
+dados_agrupados = dados_agrupados.assign(emissao_per_capita = dados_agrupados['Emissão']/dados_agrupados['populacao']).sort_values('emissao_per_capita', ascending = False)
+print(dados_agrupados)
+
+px.scatter(data_frame = dados_agrupados, x = 'populacao', y = 'Emissão', text = 'Estado', size = 'emissao_per_capita')
