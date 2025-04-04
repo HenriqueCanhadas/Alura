@@ -23,15 +23,16 @@ dados_normalizados.loc[idx, 'conta.cobranca.Total'] = dados_normalizados.loc[idx
 
 dados_normalizados.loc[idx, 'cliente.tempo_servico'] = 24
 
-print(dados_normalizados.loc[idx][['cliente.tempo_servico','conta.contrato','conta.cobranca.mensal','conta.cobranca.Total']])
+dados_normalizados.loc[idx][['cliente.tempo_servico','conta.contrato','conta.cobranca.mensal','conta.cobranca.Total']]
 
 dados_normalizados['conta.cobranca.Total'] = dados_normalizados['conta.cobranca.Total'].astype('float64')
 
+'''
 for col in dados_normalizados.columns:
     print(f"Coluna: {col}")
     print(dados_normalizados[col].unique())
     print("-" * 30)
-
+'''
 
 dados_normalizados.query("Churn == ''")
       
@@ -72,7 +73,7 @@ dados_sem_vazio['conta.contrato'].value_counts()
 
 colunas_dropar = ['conta.contrato', 'conta.faturamente_eletronico', 'conta.metodo_pagamento']
 
-print(dados_sem_vazio[colunas_dropar].isna().any(axis=1).sum())
+dados_sem_vazio[colunas_dropar].isna().any(axis=1).sum()
 
 df_sem_nulo = dados_sem_vazio.dropna(subset=colunas_dropar).copy()
 
@@ -94,13 +95,13 @@ iqr = q3-q1
 
 limite_inferior = q1 - 1.5*iqr
 limite_superior = q3 + 1.5*iqr
-
+'''
 print(q1)
 print(q3)
 print(iqr)
 print(limite_inferior)
 print(limite_superior)
-
+'''
 outliers_index = (df_sem_nulo['cliente.tempo_servico'] < limite_inferior) | (df_sem_nulo['cliente.tempo_servico'] > limite_superior)
 
 df_sem_nulo[outliers_index]['cliente.tempo_servico']
@@ -114,4 +115,63 @@ df_sem_out.loc[outliers_index, 'cliente.tempo_servico'] = np.ceil(
 
 sns.boxplot(x=df_sem_out['cliente.tempo_servico'])
 
-print(df_sem_out [outliers_index][['cliente.tempo_servico', 'conta.cobranca.mensal', 'conta.cobranca.Total']])
+df_sem_out[outliers_index][['cliente.tempo_servico', 'conta.cobranca.mensal', 'conta.cobranca.Total']]
+
+
+
+q1 = df_sem_out['cliente.tempo_servico'].quantile(.25)
+q3 = df_sem_out['cliente.tempo_servico'].quantile(.75)
+iqr = q3-q1
+
+limite_inferior = q1 - 1.5*iqr
+limite_superior = q3 + 1.5*iqr
+'''
+print(q1)
+print(q3)
+print(iqr)
+print(limite_inferior)
+print(limite_superior)
+'''
+
+outliers_index = (df_sem_out['cliente.tempo_servico'] < limite_inferior) | (df_sem_out['cliente.tempo_servico'] > limite_superior)
+
+df_sem_out = df_sem_out[~outliers_index]
+
+sns.boxplot(x=df_sem_out['cliente.tempo_servico'])
+
+df_sem_out.reset_index(drop=True,inplace=True)
+
+df_sem_id = df_sem_out.drop('id_cliente',axis=1).copy()
+
+mapeamento = {
+    'nao' : 0,
+    'sim' : 1,
+    'masculino' : 0,
+    'feminino' : 1
+}
+'''
+for col in df_sem_id.columns:
+    print(f"Coluna: {col}")
+    print(df_sem_id[col].unique())
+    print("-" * 30)
+'''
+colunas = ['telefone.servico_telefone', 'Churn', 'cliente.parceiro', 'cliente.dependentes', 'conta.faturamente_eletronico', 'cliente.genero']
+
+df_sem_id[colunas] = df_sem_id[colunas].replace(mapeamento)
+'''
+for col in df_sem_id.columns:
+    print(f"Coluna: {col}")
+    print(df_sem_id[col].unique())
+    print("-" * 30)
+'''
+
+s = pd.Series(list('abca'))
+pd.get_dummies(s)
+
+pd.get_dummies(s,dtype=int)
+
+print(df_sem_id)
+
+df_dummies = pd.get_dummies(df_sem_id, dtype=int).copy()
+
+print(df_dummies)
