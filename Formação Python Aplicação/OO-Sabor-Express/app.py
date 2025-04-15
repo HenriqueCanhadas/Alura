@@ -1,17 +1,17 @@
 from modelos.restaurante import Restaurante
+from modelos.cardapio.bebida import Bebida
+from modelos.cardapio.prato import Prato
 
 restaurante_praca = Restaurante("bk", 'hamburger')
-restaurante_mexicano = Restaurante('Mexicanfood', "mexicana")
-restaurante_mac = Restaurante("mcdonalds", "lanche")
-
-restaurante_mac.alternar_estado()
-
-restaurante_praca.receber_avaliacao("Henrique", 10)
-restaurante_praca.receber_avaliacao("William", 8)
-restaurante_praca.receber_avaliacao("Pele", 5)
+bebida_suco = Bebida("Suco de Maracuja", 5.0, "Medio")
+bebida_suco.aplicar_desconto()
+prato_pao = Prato("Paozinho", 2.0, "ta quentinho")
+prato_pao.aplicar_desconto()
+restaurante_praca.adicionar_no_cardapio(bebida_suco)
+restaurante_praca.adicionar_no_cardapio(prato_pao)
 
 def main():
-    Restaurante.listar_restaurantes()
+    restaurante_praca.exibir_cardapio
 
 if __name__ == '__main__':
     main()
